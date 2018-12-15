@@ -9,9 +9,9 @@ function! WINDOWS()
     return (has('win16') || has('win32') || has('win64'))
 endfunction
 function! OnmiConfigForJsp()
-    let pos1 = search("</script>","nb",line("w0"))
-    let pos2 = search("<script","nb",line("w0"))
-    let pos3 = search("</script>","n",line("w$"))
+    let pos1 = search('</script>','nb',line('w0'))
+    let pos2 = search('<script','nb',line('w0'))
+    let pos3 = search('</script>','n',line('w$'))
     let pos0 = line('.')
     if pos1 < pos2 && pos2 < pos0 && pos0 < pos3
         set omnifunc=javascriptcomplete#CompleteJS
@@ -37,16 +37,23 @@ endf
 function! ToggleBG()
     let s:tbg = &background
     " Inversion
-    if s:tbg == "dark"
+    if s:tbg ==# 'dark'
         set background=light
     else
         set background=dark
     endif
 endfunction
+function! ToggleConceal()
+    if &conceallevel == 0 
+        setlocal conceallevel=2
+    else
+        setlocal conceallevel=0
+    endif
+endfunction
 function! BracketsFunc()
     let line = getline('.')
     let col = col('.')
-    if line[col - 2] == "]"
+    if line[col - 2] ==# ']'
         return "{}\<esc>i"
     else
         return "{\<cr>}\<esc>O"
@@ -120,19 +127,6 @@ function! JspFileTypeInit()
     nnoremap <F4> :JCimportAdd<cr>
     inoremap <F4> <esc>:JCimportAddI<cr>
 endfunction
-function! MyTagfunc() abort
-    mark H
-    let s:MyTagfunc_flag = 1
-    UniteWithCursorWord -immediately tag
-endfunction
-
-function! MyTagfuncBack() abort
-    if exists('s:MyTagfunc_flag')&&s:MyTagfunc_flag
-        exe "normal! `H"
-        let s:MyTagfunc_flag =0
-    endif
-endfunction
-
 
 function! MyLeaderTabfunc() abort
     if g:spacevim_autocomplete_method == 'deoplete'
@@ -189,7 +183,14 @@ fu! UpdateStarredRepos()
         call SpaceVim#logger#warn('You need to set g:spacevim_github_username')
         return 0
     endif
-    let repos = github#api#users#GetStarred(g:spacevim_github_username)
+    let cache_file = expand('~/.data/github' . g:spacevim_github_username)
+    if filereadable(cache_file)
+        let repos = json_encode(readfile(cache_file, '')[0])
+    else
+        let repos = github#api#users#GetStarred(g:spacevim_github_username)
+        echom writefile([json_decode(repos)], cache_file, '')
+    endif
+
     for repo in repos
         let description = repo.full_name . repeat(' ', 40 - len(repo.full_name)) . repo.description
         let cmd = 'OpenBrowser ' . repo.html_url

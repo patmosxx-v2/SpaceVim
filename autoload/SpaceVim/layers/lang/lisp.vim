@@ -1,3 +1,12 @@
+"=============================================================================
+" lisp.vim --- SpaceVim lang#lisp layer
+" Copyright (c) 2016-2017 Wang Shidong & Contributors
+" Author: Wang Shidong < wsdjeg at 163.com >
+" URL: https://spacevim.org
+" License: GPLv3
+"=============================================================================
+
+
 function! SpaceVim#layers#lang#lisp#plugins() abort
     let plugins = []
     call add(plugins,['l04m33/vlime', {'on_ft' : 'lisp', 'rtp': 'vim'}])
@@ -8,7 +17,7 @@ endfunction
 function! SpaceVim#layers#lang#lisp#config() abort
     let g:vlime_default_mappings = {
                 \ 'lisp': [
-                \ ['i', '<space>', '<space><c-r>=VlimeKey("space")<cr>'],
+                \ ['i', '<Space>', '<Space><c-r>=VlimeKey("space")<cr>'],
                 \ ['i', '<cr>', '<cr><c-r>=VlimeKey("cr")<cr>'],
                 \ ['i', '<tab>', '<c-r>=VlimeKey("tab")<cr>'],
                 \
@@ -53,7 +62,7 @@ function! SpaceVim#layers#lang#lisp#config() abort
                 \ ],
                 \
                 \ 'inspector': [
-                \ ['n', ['<cr>', '<space>'], ':call vlime#ui#inspector#InspectorSelect()<cr>'],
+                \ ['n', ['<cr>', '<Space>'], ':call vlime#ui#inspector#InspectorSelect()<cr>'],
                 \ ['n', ['<c-n>', '<tab>'], ':call vlime#ui#inspector#NextField(v:true)<cr>'],
                 \ ['n', '<c-p>', ':call vlime#ui#inspector#NextField(v:false)<cr>'],
                 \ ['n', 'p', ':call vlime#ui#inspector#InspectorPop()<cr>'],
@@ -91,9 +100,9 @@ function! SpaceVim#layers#lang#lisp#config() abort
                 \ ['n', '<c-n>', ':call vlime#ui#input#NextHistoryItem("forward")<cr>'],
                 \ ],
                 \ }
+    call SpaceVim#mapping#space#regesit_lang_mappings('lisp', function('s:lisp'))
     augroup LocalVlimeKeys
         autocmd!
-        autocmd FileType lisp call s:lisp()
         autocmd FileType vlime_sldb call s:vlime_sldb()
         autocmd FileType vlime_repl call s:vlime_repl()
         autocmd FileType vlime_inspector call s:vlime_inspector()
@@ -109,7 +118,6 @@ endfunction
 
 
 fu! s:lisp()
-    let g:_spacevim_mappings_space.l = {'name' : '+Language Specified'}
     let g:_spacevim_mappings_space.l.c = {'name' : '+Connection Management'}
     call SpaceVim#mapping#space#langSPC('nmap', ['l','c', 'c'], "call VlimeConnectREPL()", 'Connect to Vlime server', 1)
     call SpaceVim#mapping#space#langSPC('nmap', ['l','c', 's'], "call VlimeSelectCurConnection()", 'Switch Vlime connections', 1)

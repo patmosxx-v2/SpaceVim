@@ -1,3 +1,11 @@
+"=============================================================================
+" commands.vim --- commands in SpaceVim
+" Copyright (c) 2016-2017 Wang Shidong & Contributors
+" Author: Wang Shidong < wsdjeg at 163.com >
+" URL: https://spacevim.org
+" License: GPLv3
+"=============================================================================
+
 function! SpaceVim#commands#load() abort
   ""
   " Load exist layer, {layers} can be a string of a layer name, or a list
@@ -17,6 +25,9 @@ function! SpaceVim#commands#load() abort
   " new buffer.
   command! -nargs=0 -bang SPDebugInfo call SpaceVim#logger#viewLog('<bang>' == '!')
   ""
+  " view runtime log
+  command! -nargs=0 SPRuntimeLog call SpaceVim#logger#viewRuntimeLog()
+  ""
   " edit custom config file of SpaceVim, by default this command will open
   " global custom configuration file, '-l' option will load local custom
   " configuration file.
@@ -35,16 +46,28 @@ function! SpaceVim#commands#load() abort
   command! -nargs=*
         \ -complete=custom,SpaceVim#commands#complete_plugin
         \ SPUpdate call SpaceVim#commands#update_plugin(<f-args>)
+
+  ""
+  " Command for reinstall plugin, support completion of plugin name. 
+  command! -nargs=+
+        \ -complete=custom,SpaceVim#commands#complete_plugin
+        \ SPReinstall call SpaceVim#commands#reinstall_plugin(<f-args>)
+
   ""
   " Command for install plugins.
   command! -nargs=* SPInstall call SpaceVim#commands#install_plugin(<f-args>)
+  command! -nargs=0 Report call SpaceVim#issue#new()
 endfunction
 
 " @vimlint(EVL103, 1, a:ArgLead)
 " @vimlint(EVL103, 1, a:CmdLine)
 " @vimlint(EVL103, 1, a:CursorPos)
 function! SpaceVim#commands#complete_plugin(ArgLead, CmdLine, CursorPos) abort
-  return join(keys(dein#get()) + ['SpaceVim'], "\n")
+  if g:spacevim_plugin_manager ==# 'dein'
+    return join(keys(dein#get()) + ['SpaceVim'], "\n")
+  elseif g:spacevim_plugin_manager ==# 'neobundle'
+    return join(map(neobundle#config#get_neobundles(), 'v:val.name'), "\n")
+  endif
 endfunction
 " @vimlint(EVL103, 0, a:ArgLead)
 " @vimlint(EVL103, 0, a:CmdLine)
@@ -61,15 +84,30 @@ endfunction
 " @vimlint(EVL103, 0, a:CursorPos)
 
 function! SpaceVim#commands#config(...) abort
-  if (a:0 > 0 && a:1 ==# '-g') || a:0 == 0
-    tabnew ~/.SpaceVim.d/init.vim
-  elseif  a:0 > 0 && a:1 ==# '-l'
-    tabnew .SpaceVim.d/init.vim
+  if a:0 > 0
+    if a:1 ==# '-g'
+      exe 'tabnew' g:_spacevim_global_config_path
+    elseif  a:1 ==# '-l'
+      exe 'tabnew' g:_spacevim_config_path
+    endif
+  else
+    if g:spacevim_force_global_config ||
+          \ get(g:, '_spacevim_config_path', '0') ==# '0'
+      exe 'tabnew' g:_spacevim_global_config_path
+    else
+      exe 'tabnew' g:_spacevim_config_path
+    endif
   endif
+  setlocal omnifunc=SpaceVim#custom#complete
 endfunction
 
 function! SpaceVim#commands#update_plugin(...) abort
   if g:spacevim_plugin_manager ==# 'neobundle'
+    if a:0 == 0
+      call SpaceVim#plugins#manager#update()
+    else
+      call SpaceVim#plugins#manager#update(a:000)
+    endif
   elseif g:spacevim_plugin_manager ==# 'dein'
     if a:0 == 0
       call SpaceVim#plugins#manager#update()
@@ -80,13 +118,26 @@ function! SpaceVim#commands#update_plugin(...) abort
   endif
 endfunction
 
+function! SpaceVim#commands#reinstall_plugin(...) abort
+  if g:spacevim_plugin_manager ==# 'dein'
+    call SpaceVim#plugins#manager#reinstall(a:000)
+  elseif g:spacevim_plugin_manager ==# 'neobundle'
+  elseif g:spacevim_plugin_manager ==# 'vim-plug'
+  endif
+endfunction
+
 function! SpaceVim#commands#install_plugin(...) abort
   if g:spacevim_plugin_manager ==# 'neobundle'
+    if a:0 == 0
+      call SpaceVim#plugins#manager#install()
+    else
+      call SpaceVim#plugins#manager#install(a:000)
+    endif
   elseif g:spacevim_plugin_manager ==# 'dein'
     if a:0 == 0
       call SpaceVim#plugins#manager#install()
     else
-      call dein#install(a:000)
+      call SpaceVim#plugins#manager#install(a:000)
     endif
   elseif g:spacevim_plugin_manager ==# 'vim-plug'
   endif

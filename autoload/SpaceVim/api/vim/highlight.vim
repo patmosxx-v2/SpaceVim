@@ -1,9 +1,26 @@
+"=============================================================================
+" highlight.vim --- SpaceVim highlight API
+" Copyright (c) 2016-2017 Wang Shidong & Contributors
+" Author: Wang Shidong < wsdjeg at 163.com >
+" URL: https://spacevim.org
+" License: GPLv3
+"=============================================================================
+
 let s:self = {}
 
 function! s:self.group2dict(name) abort
     let id = index(map(range(1999), "synIDattr(v:val, 'name')"), a:name)
     if id == -1
-        return {}
+        return {
+                    \ 'name' : '',
+                    \ 'ctermbg' : '',
+                    \ 'ctermfg' : '',
+                    \ 'bold' : '',
+                    \ 'italic' : '',
+                    \ 'underline' : '',
+                    \ 'guibg' : '',
+                    \ 'guifg' : '',
+                    \ }
     endif
     let rst = {
                 \ 'name' : synIDattr(id, 'name'),
@@ -32,35 +49,35 @@ function! s:self.unite(base, target, part) abort
 endfunction
 
 function! s:self.hi(info) abort
-    if empty(a:info)
+    if empty(a:info) || get(a:info, 'name', '') ==# ''
         return
     endif
-   let cmd = 'hi! ' .  a:info.name
-   if !empty(a:info.ctermbg)
-       let cmd .= ' ctermbg=' . a:info.ctermbg
-   endif
-   if !empty(a:info.ctermfg)
-       let cmd .= ' ctermfg=' . a:info.ctermfg
-   endif
-   if !empty(a:info.guibg)
-       let cmd .= ' guibg=' . a:info.guibg
-   endif
-   if !empty(a:info.guifg)
-       let cmd .= ' guifg=' . a:info.guifg
-   endif
-   let style = []
-   for sty in ['hold', 'italic', 'underline']
-       if get(a:info, sty, '') ==# '1'
-           call add(style, sty)
-       endif
-   endfor
-   if !empty(style)
-       let cmd .= ' gui=' . join(style, ',') . ' cterm=' . join(style, ',')
-   endif
-   try
-       exe cmd
-   catch
-   endtry
+    let cmd = 'hi! ' .  a:info.name
+    if !empty(a:info.ctermbg)
+        let cmd .= ' ctermbg=' . a:info.ctermbg
+    endif
+    if !empty(a:info.ctermfg)
+        let cmd .= ' ctermfg=' . a:info.ctermfg
+    endif
+    if !empty(a:info.guibg)
+        let cmd .= ' guibg=' . a:info.guibg
+    endif
+    if !empty(a:info.guifg)
+        let cmd .= ' guifg=' . a:info.guifg
+    endif
+    let style = []
+    for sty in ['bold', 'italic', 'underline']
+        if get(a:info, sty, '') ==# '1'
+            call add(style, sty)
+        endif
+    endfor
+    if !empty(style)
+        let cmd .= ' gui=' . join(style, ',') . ' cterm=' . join(style, ',')
+    endif
+    try
+        silent! exe cmd
+    catch
+    endtry
 endfunction
 
 function! s:self.hide_in_normal(name) abort
@@ -68,7 +85,7 @@ function! s:self.hide_in_normal(name) abort
     if empty(group)
         return
     endif
-    if &termguicolors || has('gui_running')
+    if (exists('+termguicolors') && &termguicolors ) || has('gui_running')
         let bg = self.group2dict('Normal').guibg
         if empty(bg)
             return
@@ -106,6 +123,52 @@ function! s:self.hi_separator(a, b) abort
                 \ }
     call self.hi(hi_a_b)
     call self.hi(hi_b_a)
+endfunction
+
+function! s:self.syntax_at(...) abort
+  syntax sync fromstart
+  if a:0 < 2
+    let l:pos = getpos('.')
+    let l:cur_lnum = pos[1]
+    let l:cur_col = pos[2]
+    if a:0 == 0
+      let l:lnum = l:cur_lnum
+      let l:col = l:cur_col
+    else
+      let l:lnum = l:cur_lnum
+      let l:col = a:1
+    endif
+  else
+    let l:lnum = a:1
+    let l:col = a:2
+  endif
+  call map(synstack(l:lnum, l:col), 'synIDattr(v:val, "name")')
+  return synIDattr(synID(l:lnum, l:col, 1), 'name')
+endfunction
+
+function! s:self.syntax_of(pattern, ...) abort
+  if a:0 < 1
+    let l:nth = 1
+  else
+    let l:nth = a:1
+  endif
+
+  let l:pos_init = getpos('.')
+  call cursor(1, 1)
+  let found = search(a:pattern, 'cW')
+  while found != 0 && nth > 1
+    let found = search(a:pattern, 'W')
+    let nth -= 1
+  endwhile
+
+  if found
+    let l:pos = getpos('.')
+    let l:output = self.syntax_at(l:pos[1], l:pos[2])
+  else
+    let l:output = ''
+  endif
+  call setpos('.', l:pos_init)
+  return l:output
 endfunction
 
 function! SpaceVim#api#vim#highlight#get() abort
