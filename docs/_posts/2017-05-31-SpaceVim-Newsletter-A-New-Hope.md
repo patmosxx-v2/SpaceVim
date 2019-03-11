@@ -1,9 +1,11 @@
 ---
-title: Newsletter #1 - A New Hope
-categories: newsletter
-excerpt: "A new hope: tern vim/neovim to be an IDE for most languages"
+title: "Newsletter #1 - A New Hope"
+categories: [newsletter, blog]
+excerpt: "A new hope: turn vim/neovim to be an IDE for most languages"
+comments: true
+commentsID: "A New Hope"
 ---
 
 # [newsletter](https://spacevim.org/development#newsletter) > A New Hope
 
-Welcome to the first newsletter for SpaceVim, a project that hopes to tern vim to be an IDE for most languages.
+Welcome to the first newsletter for SpaceVim, a project that hopes to turn vim to be an IDE for most languages.

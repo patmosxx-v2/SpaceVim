@@ -1,3 +1,32 @@
+"=============================================================================
+" dict.vim --- SpaceVim dict API
+" Copyright (c) 2016-2017 Wang Shidong & Contributors
+" Author: Wang Shidong < wsdjeg at 163.com >
+" URL: https://spacevim.org
+" License: GPLv3
+"=============================================================================
+
+""
+" @section data#dict, api-data-dict
+" @parentsection api
+" provides some functions to manipulate a dict.
+"
+" make({keys}, {values}[, {fill}])
+" 
+"   make a dictionary from two list, the {keys} and {values}.
+"
+" swap({dict})
+"
+"   swap the keys and values in a dictionary.
+"
+" make_index
+"
+"   make a dictionary from a list, use 
+
+
+
+
+
 function! SpaceVim#api#data#dict#get() abort
   return map({
         \ 'make' : '',
@@ -10,9 +39,18 @@ function! SpaceVim#api#data#dict#get() abort
         \ 'min_by' : '',
         \ 'foldl' : '',
         \ 'foldr' : '',
+        \ 'entrys' : '',
         \ },
         \ "function('s:' . v:key)"
         \ )
+endfunction
+
+function! s:entrys(dict) abort
+  let entrys = []
+  for key in keys(a:dict)
+    call add(entrys, {key : a:dict[key]})
+  endfor
+  return entrys
 endfunction
 
 function! s:make(keys, values, ...) abort

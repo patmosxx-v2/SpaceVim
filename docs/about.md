@@ -1,23 +1,26 @@
 ---
 title:  "About"
+description: "SpaceVim is a community-driven vim distribution with layer feature, all contributors make SpaceVim what it is."
 ---
 
-# About SpaceVim
+# About
 
-[SpaceVim](https://github.com/SpaceVim/SpaceVim) is a Modular configuration, a bundle of custom settings and plugins for Vim,
-here we call them layers, each layer has different plugins and config, users just need
-to select the layers they need. It got inspired by [spacemacs](https://github.com/syl20bnr/spacemacs). If you use SpaceVim,
-please star it on github. It's a great way of getting feedback and gives me the kick to
-put more time into development.
+[SpaceVim](https://github.com/SpaceVim/SpaceVim) is a community-driven Vim distribution with layer feature.
+SpaceVim manages collections of plugins in layers. Layers make it easy for you, the user, to enable a new
+language or feature by grouping all the related plugins together. It got inspired by spacemacs.
 
-If you encounter any bugs or have feature requests, just open an issue
-report on Github.
+### Goals
 
-For learning about Vim in general, read [vim-galore](https://github.com/mhinz/vim-galore).
+- More IDE-like features in Vim and Neovim
+- Better default different languages
 
-# Credits & Thanks
+### Credits & Thanks
 
-- [![GitHub contributors](https://img.shields.io/github/contributors/SpaceVim/SpaceVim.svg)](https://github.com/SpaceVim/SpaceVim/graphs/contributors)
+This project exists to thank all the people who have contributed:
+
+<a href="https://github.com/SpaceVim/SpaceVim/graphs/contributors"><img src="https://opencollective.com/spacevim/contributors.svg?width=890&button=false" /></a>
+
+- [@Gabirel](https://github.com/Gabirel) and his [Hack-SpaceVim](https://github.com/Gabirel/Hack-SpaceVim)
+- [@everettjf](https://github.com/everettjf) and his [SpaceVimTutorial](https://everettjf.gitbooks.io/spacevimtutorial/content/)
 - [vimdoc](https://github.com/google/vimdoc) generate doc file for SpaceVim
-- [Rafael Bodill](https://github.com/rafi) and his vim-config
-- [Bailey Ling](https://github.com/bling) and his dotvim
+- Authors of all the plugins used in SpaceVim.
